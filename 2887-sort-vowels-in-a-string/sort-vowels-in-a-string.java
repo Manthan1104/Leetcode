@@ -1,33 +1,21 @@
 class Solution {
     public String sortVowels(String s) {
-        int[] freq = new int[128];
-        boolean[] isVowel = new boolean[128];
-
-        String vowels = "aeiouAEIOU";
-        for (char v : vowels.toCharArray()) {
-            isVowel[v] = true;
-        }
-
-        for (char c : s.toCharArray()) {
-            if (isVowel[c]) {
-                freq[c]++;
+        char sarr[]=s.toCharArray();
+        ArrayList<Character> storeVowels = new ArrayList<>();
+        ArrayList<Integer> storeVowelsIndex=new ArrayList<>();
+        String vowels="aeiouAEIOU";
+        for(int i=0;i<sarr.length;i++){
+            char a=sarr[i];
+            if(vowels.indexOf(a) != -1){
+                storeVowels.add(a);
+                storeVowelsIndex.add(i);
             }
         }
-
-        String order = "AEIOUaeiou";
-        int pos = 0;
-        char[] arr = s.toCharArray();
-
-        for (int i = 0; i < arr.length; i++) {
-            if (isVowel[arr[i]]) {
-                while (pos < order.length() && freq[order.charAt(pos)] == 0) {
-                    pos++;
-                }
-                arr[i] = order.charAt(pos);
-                freq[order.charAt(pos)]--;
-            }
+        Collections.sort(storeVowels);
+        for (int i = 0; i < storeVowels.size(); i++) {
+            int idx = storeVowelsIndex.get(i);
+            sarr[idx] = storeVowels.get(i);
         }
-
-        return new String(arr);
+        return new String(sarr);
     }
 }
