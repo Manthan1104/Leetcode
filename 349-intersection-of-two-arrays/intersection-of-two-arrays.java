@@ -2,13 +2,10 @@ import java.util.*;
 
 class Solution {
     public int[] intersection(int[] nums1, int[] nums2) {
-       // ArrayList<Integer> resultList = new ArrayList<>();
         Set<Integer> resultSet = new HashSet<>();
         int n = nums1.length;
         int m = nums2.length;
         int i = 0, j = 0;
-
-        // Ensure arrays are sorted for two-pointer method
         Arrays.sort(nums1);
         Arrays.sort(nums2);
 
@@ -23,8 +20,6 @@ class Solution {
                 j++;
             }
         }
-
-        // Convert ArrayList → int[]
         int[] result = new int[resultSet.size()];
         int k = 0;
         for (int num : resultSet) {
