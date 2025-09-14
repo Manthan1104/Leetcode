@@ -1,51 +1,75 @@
+import java.util.*;
+
 class Solution {
     public String[] spellchecker(String[] wordlist, String[] queries) {
-        int m = wordlist.length, n = queries.length;
-        String[] res = new String[n];
-        Map<String, Integer> caseSense = new HashMap<>();
-        Map<String, Integer> caseInsense = new HashMap<>();
-        Map<String, Integer> vowelErrors = new HashMap<>();
-        for (int i = m - 1; i >= 0; i--) {
-            String word = wordlist[i];
-            caseSense.put(word, i);
-            String lowerCase = word.toLowerCase();
-            char[] vowelRepArr = lowerCase.toCharArray();
-            for (int j = 0; j < vowelRepArr.length; j++) {
-                if (vowelRepArr[j] == 'e' || vowelRepArr[j] == 'i' || vowelRepArr[j] == 'o' || vowelRepArr[j] == 'u') {
-                    vowelRepArr[j] = 'a';
-                }
-            }
-            caseInsense.put(lowerCase, i);
-            vowelErrors.put(new String(vowelRepArr), i);
-        }
-        for (int i = 0; i < n; i++) {
-            String word = queries[i];
-            if (caseSense.containsKey(word)) {
-                res[i] = word;
-                continue;
+        Set<String> exactMatch = new HashSet<>();
+        Map<String, String> caseInsensitive = new HashMap<>();
+        Map<String, String> vowelError = new HashMap<>();
+
+        for (String word : wordlist) {
+            exactMatch.add(word);
+
+            String wordLower = word.toLowerCase();
+            if (!caseInsensitive.containsKey(wordLower)) {
+                caseInsensitive.put(wordLower, word);
             }
 
-            String lowerCase = word.toLowerCase();
-            if (caseInsense.containsKey(lowerCase)) {
-                res[i] = wordlist[caseInsense.get(lowerCase)];
-                continue;
+            String wordVowelMasked = maskVowels(wordLower);
+            if (!vowelError.containsKey(wordVowelMasked)) {
+                vowelError.put(wordVowelMasked, word);
             }
-
-            char[] vowelRepArr = lowerCase.toCharArray();
-            for (int j = 0; j < vowelRepArr.length; j++) {
-                if (vowelRepArr[j] == 'e' || vowelRepArr[j] == 'i' || vowelRepArr[j] == 'o' || vowelRepArr[j] == 'u') {
-                    vowelRepArr[j] = 'a';
-                }
-            }
-            String vowelRepStr = new String(vowelRepArr);
-            if (vowelErrors.containsKey(vowelRepStr)) {
-                res[i] = wordlist[vowelErrors.get(vowelRepStr)];
-                continue;
-            }
-            res[i] = "";
         }
 
-        return res;
+        String[] result = new String[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            String query = queries[i];
 
+            if (exactMatch.contains(query)) {
+                result[i] = query;
+            } else {
+                String queryLower = query.toLowerCase();
+                String queryVowelMasked = maskVowels(queryLower);
+
+                if (caseInsensitive.containsKey(queryLower)) {
+                    result[i] = caseInsensitive.get(queryLower);
+                } else if (vowelError.containsKey(queryVowelMasked)) {
+                    result[i] = vowelError.get(queryVowelMasked);
+                } else {
+                    result[i] = "";
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private String maskVowels(String word) {
+        StringBuilder sb = new StringBuilder();
+        for (char ch : word.toCharArray()) {
+            if (isVowel(ch)) {
+                sb.append('*');
+            } else {
+                sb.append(ch);
+            }
+        }
+        return sb.toString();
+    }
+
+    private boolean isVowel(char c) {
+        return "aeiou".indexOf(c) != -1;
     }
 }
+
+/*
+
+private boolean isVowel(char c) {
+    Character ch = Character.toLowerCase(c);  // ensure lowercase
+    return ch.equals('a') || ch.equals('e') || ch.equals('i') || ch.equals('o') || ch.equals('u');
+}
+
+private boolean isVowel(char c) {
+    c = Character.toLowerCase(c);  // in case it's uppercase
+    return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
+}
+
+*/
