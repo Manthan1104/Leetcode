@@ -1,49 +1,45 @@
 import java.util.*;
 
+class Food {
+    String name;
+    String cuisine;
+    int rating;
+    Food(String n, String c, int r) {
+        name = n;
+        cuisine = c;
+        rating = r;
+    }
+}
+
 class FoodRatings {
-    // Cuisine -> (Rating -> Foods)
-    Map<String, TreeMap<Integer, TreeSet<String>>> ratingSystem = new HashMap<>();
-    Map<String, String> foodToCuisine = new HashMap<>();
-    Map<String, Integer> foodToRating = new HashMap<>();
+    private Map<String, Food> foodToFood;
+    private Map<String, TreeSet<Food>> cuisineToFoods;
 
     public FoodRatings(String[] foods, String[] cuisines, int[] ratings) {
+        foodToFood = new HashMap<>();
+        cuisineToFoods = new HashMap<>();
         for (int i = 0; i < foods.length; i++) {
-            String food = foods[i];
-            String cuisine = cuisines[i];
-            int rating = ratings[i];
-
-            foodToCuisine.put(food, cuisine);
-            foodToRating.put(food, rating);
-
-            ratingSystem.putIfAbsent(cuisine, new TreeMap<>(Collections.reverseOrder()));
-            ratingSystem.get(cuisine).putIfAbsent(rating, new TreeSet<>());
-            ratingSystem.get(cuisine).get(rating).add(food);
+            Food f = new Food(foods[i], cuisines[i], ratings[i]);
+            foodToFood.put(foods[i], f);
+            cuisineToFoods
+                .computeIfAbsent(cuisines[i], k -> new TreeSet<>( (a, b) -> {
+                    if (a.rating != b.rating) return Integer.compare(b.rating, a.rating);
+                    return a.name.compareTo(b.name);
+                }))
+                .add(f);
         }
     }
-
+    
     public void changeRating(String food, int newRating) {
-        String cuisine = foodToCuisine.get(food);
-        int oldRating = foodToRating.get(food);
-
-        // Remove from old rating set
-        TreeSet<String> oldSet = ratingSystem.get(cuisine).get(oldRating);
-        oldSet.remove(food);
-        if (oldSet.isEmpty()) {
-            ratingSystem.get(cuisine).remove(oldRating);
-        }
-
-        // Update maps
-        foodToRating.put(food, newRating);
-
-        // Add to new rating set
-        ratingSystem.get(cuisine).putIfAbsent(newRating, new TreeSet<>());
-        ratingSystem.get(cuisine).get(newRating).add(food);
+        Food f = foodToFood.get(food);
+        TreeSet<Food> set = cuisineToFoods.get(f.cuisine);
+        set.remove(f);
+        f.rating = newRating;
+        set.add(f);
     }
-
+    
     public String highestRated(String cuisine) {
-        // First entry = highest rating (since reverse order)
-        Map.Entry<Integer, TreeSet<String>> entry = ratingSystem.get(cuisine).firstEntry();
-        return entry.getValue().first(); // lexicographically smallest food at that rating
+        return cuisineToFoods.get(cuisine).first().name;
     }
 }
 
