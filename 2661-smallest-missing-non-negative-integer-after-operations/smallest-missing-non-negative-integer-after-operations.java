@@ -1,0 +1,22 @@
+class Solution {
+    public int findSmallestInteger(int[] nums, int value) {
+        int[] freq = new int[value];
+
+        // Count frequency of each remainder
+        for (int num : nums) {
+            int rem = ((num % value) + value) % value;
+            freq[rem]++;
+        }
+
+        // Find the smallest missing number
+        int i = 0;
+        while (true) {
+            int rem = i % value;
+            if (freq[rem] == 0) {
+                return i;
+            }
+            freq[rem]--;
+            i++;
+        }
+    }
+}
