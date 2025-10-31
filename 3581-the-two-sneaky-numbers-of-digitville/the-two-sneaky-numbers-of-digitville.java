@@ -1,19 +1,26 @@
+import java.util.*;
+
 class Solution {
     public int[] getSneakyNumbers(int[] nums) {
-        Map<Integer,Integer> freq=new LinkedHashMap<>();
-        for(int i : nums){
-            freq.put(i,freq.getOrDefault(i,1)+1);
+        List<Integer> duplicates = new ArrayList<>();
+
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = i + 1; j < nums.length; j++) {
+                if (nums[i] == nums[j]) {
+                    // avoid adding the same duplicate multiple times
+                    if (!duplicates.contains(nums[i])) {
+                        duplicates.add(nums[i]);
+                    }
+                }
+            }
         }
-        ArrayList<Integer>list=new ArrayList<>();
-        for(int i : freq.keySet()){
-            if(freq.get(i)!=2)list.add(i);
+
+        // Convert list to array
+        int[] result = new int[duplicates.size()];
+        for (int i = 0; i < duplicates.size(); i++) {
+            result[i] = duplicates.get(i);
         }
-        int result[]=new int[list.size()];
-        int c=0;
-        for(int i : list){
-            result[c]=i;
-            c++;
-        }
+
         return result;
     }
 }
