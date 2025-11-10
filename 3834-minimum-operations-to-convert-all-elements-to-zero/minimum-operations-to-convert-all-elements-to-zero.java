@@ -4,7 +4,7 @@ class Solution {
         int top = 0;                           
         int ans = 0;                           
 
-        for (var i = 0; i < nums.length; i++) {
+        for (int i = 0; i < nums.length; i++) {
             while (stack[top] > nums[i]) {
                 top--;
                 ans++;
