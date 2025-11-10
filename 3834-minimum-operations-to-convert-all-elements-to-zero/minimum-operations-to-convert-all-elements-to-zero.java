@@ -1,8 +1,8 @@
 class Solution {
     public int minOperations(int[] nums) {
-        var stack = new int[nums.length + 1];  
-        var top = 0;                           
-        var ans = 0;                           
+        int[] stack = new int[nums.length + 1];  
+        int top = 0;                           
+        int ans = 0;                           
 
         for (var i = 0; i < nums.length; i++) {
             while (stack[top] > nums[i]) {
