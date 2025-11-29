@@ -1,7 +1,6 @@
 class Solution {
     public int minOperations(int[] nums, int k) {
-        int ans=0, n=nums.length;
-        for(int i=0; i<n; i++) ans+=nums[i];
-        return ans%k;
+        for(int i = 1;i<nums.length;i++) nums[0] += nums[i];
+        return nums[0] % k;
     }
 }
