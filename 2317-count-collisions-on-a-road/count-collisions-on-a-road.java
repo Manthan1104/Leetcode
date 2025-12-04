@@ -1,15 +1,22 @@
 class Solution {
-    public int countCollisions(String D) {
-        final int n=D.length();
-        if (n==1) return 0;
-        int l=0, r=n-1;
-        while (l<r && D.charAt(l)=='L') l++;
-        while (l<r && D.charAt(r)=='R') r--;
-        if (l>=r) return 0;
-        int col=0;
-        for( ; l<=r; l++){
-           col+=(D.charAt(l)!='S'?1:0);
+    public int countCollisions(String directions) {
+        int n = directions.length();
+        int i = 0, j = n - 1;
+
+        // Skip all left cars at the start
+        while (i < n && directions.charAt(i) == 'L') i++;
+
+        // Skip all right cars at the end
+        while (j >= 0 && directions.charAt(j) == 'R') j--;
+
+        int collisions = 0;
+
+        for (int k = i; k <= j; k++) {
+            if (directions.charAt(k) != 'S') {
+                collisions++;
+            }
         }
-        return col;  
+
+        return collisions;
     }
 }
