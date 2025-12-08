@@ -9,6 +9,7 @@
  * }
  */
 
+
 // class Solution {
 //     public ListNode reverseList(ListNode head) {
 //         if(head==null||head.next==null)return head;
@@ -26,21 +27,36 @@
 
 
 
+// brute
+// class Solution {
+//     public ListNode reverseList(ListNode head) {
+//         ListNode temp=head;
+//         Stack<Integer>st=new Stack<>();
+//         while(temp!=null){
+//             st.push(temp.val);
+//             temp=temp.next;
+//         }
+//         temp=head;
+//         while(temp!=null){
+//             temp.val=st.pop();
+//             //st.pop();
+//             temp=temp.next;
+//         }
+//         return head;
+//     }
+// }
+
 
 class Solution {
     public ListNode reverseList(ListNode head) {
         ListNode temp=head;
-        Stack<Integer>st=new Stack<>();
+        ListNode prev=null;
         while(temp!=null){
-            st.push(temp.val);
-            temp=temp.next;
+            ListNode front=temp.next;
+            temp.next=prev;
+            prev=temp;
+            temp=front;
         }
-        temp=head;
-        while(temp!=null){
-            temp.val=st.pop();
-            //st.pop();
-            temp=temp.next;
-        }
-        return head;
+        return prev;
     }
 }
