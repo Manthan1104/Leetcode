@@ -11,19 +11,32 @@
  */
 public class Solution {
     public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
-       if (headA == null || headB == null) return null;
-        Map<ListNode,Integer>mpp=new HashMap<>();
+        ListNode t1=headA;
+        int N1=0;
+        ListNode t2=headB;
+        int N2=0;
+        while(t1!=null){
+            N1++;
+            t1=t1.next;
+        }
+        while(t2!=null){
+            N2++;
+            t2=t2.next;
+        }
+        if(N1<N2){
+            return collisionPoint(headA,headB,N2-N1);
+        }else return collisionPoint(headB,headA,N1-N2);
+    }
 
-        ListNode temp=headA;
-        while(temp!=null){
-            mpp.put(temp, 1);
-            temp=temp.next;
+    public static ListNode collisionPoint(ListNode t1,ListNode t2,int d){
+        while(d>0){
+            d--;
+            t2=t2.next;
         }
-        temp=headB;
-        while(temp!=null){
-            if(mpp.containsKey(temp))return temp;
-            temp=temp.next;
+        while(t1!=t2){
+            t1=t1.next;
+            t2=t2.next;
         }
-        return null;
+        return t1;
     }
 }
