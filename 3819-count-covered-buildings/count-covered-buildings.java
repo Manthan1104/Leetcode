@@ -1,29 +1,32 @@
+import java.util.*;
+
 class Solution {
     public int countCoveredBuildings(int n, int[][] buildings) {
+        int m = buildings.length;
+        Map<Integer, List<Integer>> row = new HashMap<>();
+        Map<Integer, List<Integer>> col = new HashMap<>();
+        for (int[] b : buildings) {
+            int x = b[0], y = b[1];
+            row.computeIfAbsent(x, k -> new ArrayList<>()).add(y);
+            col.computeIfAbsent(y, k -> new ArrayList<>()).add(x);
+        }
 
-        Map<Integer, TreeSet<Integer>> rowToCol = new HashMap<>();
-        Map<Integer, TreeSet<Integer>> colToRow = new HashMap<>();
-        for (int building[] : buildings) {
-            int x = building[0], y = building[1];
-            rowToCol.computeIfAbsent(x, k -> new TreeSet<>()).add(y);
-            colToRow.computeIfAbsent(y, k -> new TreeSet<>()).add(x);
+        for (List<Integer> ys : row.values()) Collections.sort(ys);
+        for (List<Integer> xs : col.values()) Collections.sort(xs);
+
+        int ans = 0;
+        for (int[] b : buildings) {
+            int x = b[0], y = b[1];
+            List<Integer> ys = row.get(x);
+            List<Integer> xs = col.get(y);
+
+            int posY = Collections.binarySearch(ys, y);
+            int posX = Collections.binarySearch(xs, x);
+            boolean insideRow = (posY > 0 && posY < ys.size() - 1);
+            boolean insideCol = (posX > 0 && posX < xs.size() - 1);
+
+            if (insideRow && insideCol) ans++;
         }
-        int cnt = 0;
-        for (int building[] : buildings) {
-            int x = building[0], y = building[1];
-            
-            TreeSet<Integer> cols = rowToCol.get(x);
-            TreeSet<Integer> rows = colToRow.get(y);
-            
-            Integer left = cols.lower(y);
-            Integer right = cols.higher(y);
-            Integer up = rows.lower(x);
-            Integer down = rows.higher(x);
-            
-            if ((left != null) && (right != null) && (up != null) && (down != null)) {
-                cnt++;
-            }
-        }
-        return cnt;
+        return ans;
     }
 }
