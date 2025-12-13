@@ -1,37 +1,53 @@
 import java.util.*;
-import java.util.regex.Pattern;
 
 class Solution {
     public List<String> validateCoupons(String[] code, String[] businessLine, boolean[] isActive) {
-        List<String> arr1 = new ArrayList<>();
-        List<String> arr2 = new ArrayList<>();
-        List<String> arr3 = new ArrayList<>();
-        List<String> arr4 = new ArrayList<>();
-
-        Pattern pattern = Pattern.compile("[A-Za-z0-9_]+");
-
+        List<Integer> validIndices = new ArrayList<>();
+        
+        // Filter valid coupons
         for (int i = 0; i < code.length; i++) {
-            if (pattern.matcher(code[i]).matches() && isActive[i]) {
-                if (businessLine[i].equals("electronics"))
-                    arr1.add(code[i]);
-                else if (businessLine[i].equals("grocery"))
-                    arr2.add(code[i]);
-                else if (businessLine[i].equals("pharmacy"))
-                    arr3.add(code[i]);
-                else if (businessLine[i].equals("restaurant"))
-                    arr4.add(code[i]);
+            if (isActive[i] && getRank(businessLine[i]) != -1 && isValidCode(code[i])) {
+                validIndices.add(i);
             }
         }
-
-        Collections.sort(arr1);
-        Collections.sort(arr2);
-        Collections.sort(arr3);
-        Collections.sort(arr4);
-
-        arr1.addAll(arr2);
-        arr1.addAll(arr3);
-        arr1.addAll(arr4);
-
-        return arr1;
+        
+        // Sort based on business priority, then lexicographically by code
+        validIndices.sort((a, b) -> {
+            int rankA = getRank(businessLine[a]);
+            int rankB = getRank(businessLine[b]);
+            if (rankA != rankB) {
+                return Integer.compare(rankA, rankB);
+            }
+            return code[a].compareTo(code[b]);
+        });
+        
+        // Extract result
+        List<String> result = new ArrayList<>();
+        for (int index : validIndices) {
+            result.add(code[index]);
+        }
+        return result;
+    }
+    
+    // Helper to get priority rank. Returns -1 if invalid business.
+    private int getRank(String business) {
+        switch (business) {
+            case "electronics": return 1;
+            case "grocery": return 2;
+            case "pharmacy": return 3;
+            case "restaurant": return 4;
+            default: return -1;
+        }
+    }
+    
+    // Helper to validate code characters (Alphanumeric or '_')
+    private boolean isValidCode(String s) {
+        if (s == null || s.isEmpty()) return false;
+        for (char c : s.toCharArray()) {
+            if (!Character.isLetterOrDigit(c) && c != '_') {
+                return false;
+            }
+        }
+        return true;
     }
 }
