@@ -1,36 +1,32 @@
 class Solution {
-   static public long maximumProfit(int[] prices, int k) {
-        long ans = 0;
+    public long maximumProfit(int[] prices, int k) {
         int n = prices.length;
-        Long[][][] dp = new Long[n][k + 1][3];
-        long res = solve(0, k, 0, n, prices, dp);
-        return res;
-    }
+        if (n < 2 || k == 0) return 0;
 
-    static long solve(int i, int k, int decider, int n, int[] prices, Long[][][] dp) {
-        if (i == n) {
-            if (k >= 0 && decider == 0)
-                return 0;
-            return Integer.MIN_VALUE;
-        }
+        long[] dp_prev = new long[n];
+        long[] dp_cur = new long[n];
 
-        if (dp[i][k][decider] != null) {
-            return dp[i][k][decider];
-        }
+        for (int t = 1; t <= k; t++) {
+            long best_buy = -prices[0];
+            long best_short = prices[0];
+            dp_cur[0] = 0;
 
-        long take = Integer.MIN_VALUE, dontTake = Integer.MIN_VALUE;
-        if (k > 0) {
-            if (decider == 1) { 
-                take = prices[i] + solve(i + 1, k - 1, 0, n, prices, dp);
-            } else if (decider == 2) { 
-                take = -prices[i] + solve(i + 1, k - 1, 0, n, prices, dp);
-            } else {
-                take = Math.max(prices[i] + solve(i + 1, k, 2, n, prices, dp),
-                        -prices[i] + solve(i + 1, k, 1, n, prices, dp));
+            for (int i = 1; i < n; i++) {
+                long a = dp_cur[i - 1];
+                long b = best_buy + prices[i];
+                long c = best_short - prices[i];
+
+                dp_cur[i] = Math.max(Math.max(a, b), c);
+
+                best_buy = Math.max(best_buy, dp_prev[i - 1] - prices[i]);
+                best_short = Math.max(best_short, dp_prev[i - 1] + prices[i]);
             }
+
+            long[] temp = dp_prev;
+            dp_prev = dp_cur;
+            dp_cur = temp;
         }
 
-        dontTake = solve(i + 1, k, decider, n, prices, dp);
-        return dp[i][k][decider] = Math.max(take, dontTake);
+        return dp_prev[n - 1];
     }
 }
