@@ -1,36 +1,33 @@
 class Solution {
-    public long maxProfit(int[] prices, int[] strat, int k) {
-        int n = prices.length;
-        int h = k / 2;
-        long[] sp = new long[n];
-        long base = 0;
-        for (int i = 0; i < n; i++) {
-            sp[i] = (long)strat[i] * prices[i];
-            base += sp[i];
+    public long maxProfit(int[] prices, int[] strategy, int k) {
+        //total means the total profit without changing;
+        //then we change k so we create k profit in the window of k
+        long total = 0L;
+        long sum = 0L;
+        for(int i = 0;i<k/2;i++){
+            total += prices[i]*strategy[i];
+            //first half become 0 so 
+            sum -= prices[i]*strategy[i];
         }
-
-        if (n == k) {
-            long winOrig = base;
-            long winMod = 0;
-            for (int i = h; i < n; i++) winMod += prices[i];
-            long change = winMod - winOrig;
-            return base + Math.max(0, change);
+        //second half part become 1;
+        for(int i = k/2;i<k;i++){
+            total += prices[i]*strategy[i];
+            sum += prices[i]*(1-strategy[i]);
         }
+        long max = Math.max(sum, 0);
+        for(int i = k;i<prices.length;i++){
+            //three points to be changed
+            total += prices[i]*strategy[i];
+            //newi count in profit
+            sum += prices[i]*(1-strategy[i]);//5-(-5)
+            //i-k/2 change from 1 to 0 
+            sum -= prices[i-k/2];//5*1-5*0;
+            //the most left goes out of window i-k when we calculate it is 0 
+            //so it depends on it is profit 0 to 0 or 1 or -1
+            sum += prices[i-k]*strategy[i-k];
 
-        long winOrig = 0;
-        for (int i = 0; i < k; i++) winOrig += sp[i];
-
-        long winMod = 0;
-        for (int i = h; i < k; i++) winMod += prices[i];
-
-        long maxCh = winMod - winOrig;
-
-        for (int i = 1; i <= n - k; i++) {
-            winOrig += sp[i + k - 1] - sp[i - 1];
-            winMod += prices[i + k - 1] - prices[i - 1 + h];
-            maxCh = Math.max(maxCh, winMod - winOrig);
+            max = Math.max(max, sum);
         }
-
-        return base + Math.max(0, maxCh);
+        return total + max;
     }
 }
