@@ -1,42 +1,53 @@
 class Solution {
+    int[] father;
     public List<Integer> findAllPeople(int n, int[][] meetings, int firstPerson) {
-        int[] groups = new int[100000];
-        List<Integer> result = new ArrayList<>();
-        List<Integer> temp = new ArrayList<>();
-
-        for (int i = 0; i < n; ++i) groups[i] = i;
-        groups[firstPerson] = 0;
-
-        Arrays.sort(meetings, (a, b) -> Integer.compare(a[2], b[2]));
-
-        int i = 0;
-        while (i < meetings.length) {
-            int currentTime = meetings[i][2];
-            temp.clear();
-            while (i < meetings.length && meetings[i][2] == currentTime) {
-                int g1 = find(groups, meetings[i][0]);
-                int g2 = find(groups, meetings[i][1]);
-                groups[Math.max(g1, g2)] = Math.min(g1, g2);
-                temp.add(meetings[i][0]);
-                temp.add(meetings[i][1]);
-                ++i;
+        Arrays.sort(meetings, (a, b)->Integer.compare(a[2], b[2]));
+        father = new int[n];
+        for(int i=0; i<n; i++)
+            father[i] = i;
+        father[firstPerson] = 0;
+        int m = meetings.length;
+        for(int i=0; i<m; i++){
+            int j = i;
+            while(j<m && meetings[j][2]==meetings[i][2]){
+                int a = meetings[j][0];
+                int b = meetings[j][1];
+                if(findSet(a)!=findSet(b))
+                    union(a, b);
+                j++;
             }
-            for (int j = 0; j < temp.size(); ++j) {
-                if (find(groups, temp.get(j)) != 0) {
-                    groups[temp.get(j)] = temp.get(j);
+
+            for(int k=i; k<j; k++){
+                int a = meetings[k][0];
+                int b = meetings[k][1];
+                if(findSet(a)!=0 && findSet(b)!=0){
+                    father[a] = a;
+                    father[b] = b;
                 }
             }
+            i = j-1;
         }
 
-        for (int j = 0; j < n; ++j) {
-            if (find(groups, j) == 0) result.add(j);
+        List<Integer> ret = new ArrayList<>();
+        for(int i=0; i<n; i++){
+            if(findSet(i)==0)
+                ret.add(i);
         }
-
-        return result;
+        return ret;
     }
 
-    private int find(int[] groups, int index) {
-        while (index != groups[index]) index = groups[index];
-        return index;
+    public int findSet(int a){
+        if(a!=father[a])
+            father[a] = findSet(father[a]);
+        return father[a];
+    }
+
+    public void union(int a, int b){
+        a = father[a];
+        b = father[b];
+        if(a<b)
+            father[b] = a;
+        else
+            father[a] = b;
     }
 }
