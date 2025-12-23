@@ -15,8 +15,8 @@
  */
 class Solution {
     public List<List<Integer>> levelOrder(TreeNode root) {
-        Queue<TreeNode>queue=new LinkedList<TreeNode>();
-        List<List<Integer>>wrapList=new LinkedList<List<Integer>>();
+        Queue<TreeNode>queue=new LinkedList<>();
+        List<List<Integer>>wrapList=new LinkedList<>();
         if(root==null)return wrapList;
         queue.offer(root);
         while(!queue.isEmpty()){
