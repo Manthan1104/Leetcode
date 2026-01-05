@@ -1,25 +1,19 @@
 class Solution {
     public long maxMatrixSum(int[][] matrix) {
         int n = matrix.length;
-        long totalSum = 0;
-        int negativeCount = 0;
-        int minAbsValue = Integer.MAX_VALUE;
-
+        long sum = 0;
+        int neg = 0;
+        long min = Long.MAX_VALUE;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                int value = matrix[i][j];
-                totalSum += Math.abs(value);
-                if (value < 0) {
-                    negativeCount++;
-                }
-                minAbsValue = Math.min(minAbsValue, Math.abs(value));
+                int v = matrix[i][j];
+                if (v < 0) neg++;
+                long a = Math.abs((long) v);
+                sum += a;
+                if (a < min) min = a;
             }
         }
-
-        if (negativeCount % 2 == 0) {
-            return totalSum;
-        } else {
-            return totalSum - 2 * minAbsValue;
-        }
+        if ((neg & 1) == 1) sum -= 2 * min;
+        return sum;
     }
 }
