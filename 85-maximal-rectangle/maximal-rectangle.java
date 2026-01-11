@@ -1,55 +1,51 @@
 class Solution {
+    private int getLargestAreaInAHistogram(int[] arr, Stack<Integer> st) {
+        st.clear();
+
+        int max = Integer.MIN_VALUE;
+
+        for(int i = 0; i < arr.length; i++) {
+
+            while(!st.isEmpty() && arr[i] < arr[st.peek()]) {
+                int value = arr[st.pop()];
+                int pse = st.isEmpty() ? -1 : st.peek();
+                max = Math.max(max, (i - pse - 1) * value);
+            }
+
+            st.push(i);
+        }
+
+        while(!st.isEmpty()) {
+            int value = arr[st.pop()];
+            int pse = st.isEmpty() ? -1 : st.peek();
+            max = Math.max(max, (arr.length - pse - 1) * value);
+        }
+
+        return max;
+    }
+
     public int maximalRectangle(char[][] matrix) {
-        if (matrix == null || matrix.length == 0 || matrix[0].length == 0)
-            return 0;
+        int maxRectangle = Integer.MIN_VALUE;
 
-        int M = matrix.length;
-        int N = matrix[0].length;
+        int m = matrix.length;
+        int n = matrix[0].length;
 
-        int[][] mat = new int[M][N];
+        Stack<Integer> st = new Stack<>();
 
-        // convert char to int
-        for (int i = 0; i < M; i++) {
-            for (int j = 0; j < N; j++) {
-                mat[i][j] = matrix[i][j] - '0';
-            }
-        }
+        int[] arr = new int[n];
 
-        // row-wise prefix widths
-        for (int i = 0; i < M; i++) {
-            for (int j = 1; j < N; j++) {
-                if (mat[i][j] == 1) {
-                    mat[i][j] += mat[i][j - 1];
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(matrix[i][j] == '0') {
+                    arr[j] = 0;
+                } else {
+                    arr[j] += 1;
                 }
             }
+            
+            maxRectangle = Math.max(maxRectangle, getLargestAreaInAHistogram(arr, st));
         }
 
-        int Ans = 0;
-
-        // fix each column
-        for (int j = 0; j < N; j++) {
-            for (int i = 0; i < M; i++) {
-                int width = mat[i][j];
-                if (width == 0) continue;
-
-                // expand downward
-                int currWidth = width;
-                for (int k = i; k < M && mat[k][j] > 0; k++) {
-                    currWidth = Math.min(currWidth, mat[k][j]);
-                    int height = k - i + 1;
-                    Ans = Math.max(Ans, currWidth * height);
-                }
-
-                // expand upward
-                currWidth = width;
-                for (int k = i; k >= 0 && mat[k][j] > 0; k--) {
-                    currWidth = Math.min(currWidth, mat[k][j]);
-                    int height = i - k + 1;
-                    Ans = Math.max(Ans, currWidth * height);
-                }
-            }
-        }
-
-        return Ans;
+        return maxRectangle;
     }
 }
