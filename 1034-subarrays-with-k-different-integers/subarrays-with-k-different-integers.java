@@ -1,29 +1,20 @@
 class Solution {
-    public int subarraysWithKDistinct(int[] nums, int k) {
-        int subWithMaxK = subarrayWithAtMostK(nums, k);
-        int reducedSubWithMaxK = subarrayWithAtMostK(nums, k - 1);
-        return subWithMaxK - reducedSubWithMaxK;
-    }
-    
-    public int subarrayWithAtMostK(int[] nums, int k) {
-        HashMap<Integer, Integer> map = new HashMap<>();
-        int left = 0, right = 0, ans = 0;
-        
-        while (right < nums.length) {
-            map.put(nums[right], map.getOrDefault(nums[right], 0) + 1);
-            
-            while (map.size() > k) {
-                map.put(nums[left], map.get(nums[left]) - 1);
-                if (map.get(nums[left]) == 0) {
-                    map.remove(nums[left]);
-                }
+    private int subarraysWithKDistinctLessThanK(int[] nums, int k) {
+        int[] count = new int[nums.length+1];
+        int left = 0, res = 0, unique = 0;
+        for(int right = 0; right < nums.length; right++){
+            if(count[nums[right]] == 0) unique++;
+            count[nums[right]]++;
+            while(unique > k){
+                count[nums[left]]--;
+                if(count[nums[left]] == 0) unique--;
                 left++;
             }
-            
-            ans += right - left + 1; // Size of subarray
-            right++;
+            res += right-left+1;
         }
-        
-        return ans;
+        return res;
+    }
+    public int subarraysWithKDistinct(int[] nums, int k) {
+        return subarraysWithKDistinctLessThanK(nums, k) - subarraysWithKDistinctLessThanK(nums, k-1);
     }
 }
