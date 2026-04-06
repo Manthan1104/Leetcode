@@ -1,57 +1,32 @@
 class Solution {
     public int robotSim(int[] commands, int[][] obstacles) {
-        HashSet<String> obs = new HashSet<>();
-        for (int[] arr : obstacles) {
-            obs.add(arr[0] + "," + arr[1]);
+        Set<String> st = new HashSet<>();
+        
+        for (int[] obs : obstacles) {
+            st.add(obs[0] + "," + obs[1]);
         }
 
-        char ch = 'N';
-        int max = 0;
-        int x = 0, y = 0;
+        int[][] dir = {{0,1}, {1,0}, {0,-1}, {-1,0}};
 
-        for (int i = 0; i < commands.length; i++) {
-            int curr = commands[i];
+        int x = 0, y = 0, d = 0, maxDist = 0;
 
-            if (curr == -1) {
-                if (ch == 'N') ch = 'E';
-                else if (ch == 'E') ch = 'S';
-                else if (ch == 'S') ch = 'W';
-                else ch = 'N';
+        for (int cmd : commands) {
+            if (cmd == -1) d = (d + 1) % 4;
+            else if (cmd == -2) d = (d + 3) % 4;
+            else {
+                for (int i = 0; i < cmd; i++) {
+                    int nx = x + dir[d][0];
+                    int ny = y + dir[d][1];
 
-            } else if (curr == -2) {
-                if (ch == 'N') ch = 'W';
-                else if (ch == 'W') ch = 'S';
-                else if (ch == 'S') ch = 'E';
-                else ch = 'N';
+                    if (st.contains(nx + "," + ny)) break;
 
-            } else {
-
-                if (ch == 'N') {
-                    for (int j = 0; j < curr; j++) {
-                        if (obs.contains(x + "," + (y + 1))) break;
-                        y++;
-                    }
-                } else if (ch == 'S') {
-                    for (int j = 0; j < curr; j++) {
-                        if (obs.contains(x + "," + (y - 1))) break;
-                        y--;
-                    }
-                } else if (ch == 'W') {
-                    for (int j = 0; j < curr; j++) {
-                        if (obs.contains((x - 1) + "," + y)) break;
-                        x--;
-                    }
-                } else if (ch == 'E') {
-                    for (int j = 0; j < curr; j++) {
-                        if (obs.contains((x + 1) + "," + y)) break;
-                        x++;
-                    }
+                    x = nx;
+                    y = ny;
+                    maxDist = Math.max(maxDist, x*x + y*y);
                 }
-
-                max = Math.max(max, x * x + y * y);
             }
         }
 
-        return max;
+        return maxDist;
     }
 }
