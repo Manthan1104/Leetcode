@@ -1,11 +1,19 @@
-class Solution {
-    private int revnum(int a) {
-        if (a / 10 == 0) return a ;
-        String s = new StringBuilder(Integer.toString(a)).reverse().toString();
-        return Integer.parseInt(s) ;
+class Solution 
+{
+    public int mirrorDistance(int n) 
+    {
+        int rev=reverse(n);
+        return Math.abs(rev-n);
     }
-
-    public int mirrorDistance(int n) {
-        return Math.abs(n - revnum(n)) ;
+    public int reverse(int n)
+    {
+        int ans=0;
+        while(n>0)
+        {
+            int dig=n%10;
+            ans=ans*10+dig;
+            n=n/10;
+        }
+        return ans;
     }
 }
