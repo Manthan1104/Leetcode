@@ -1,27 +1,25 @@
 class Solution {
-    private int calFinishTime(int[] ls, int[] ld,int[] ws, int[] wd) {
-
-        int mini = Integer.MAX_VALUE;
-
-        for (int i = 0; i < ls.length; i++) {
-            mini = Math.min(mini, ls[i] + ld[i]);
-        }
+    public int earliestFinishTime(int[] lst, int[] ldu,
+                                 int[] wst, int[] wdu) {
 
         int ans = Integer.MAX_VALUE;
 
-        for (int i = 0; i < ws.length; i++) {
-            ans = Math.min(
-                ans,
-                Math.max(mini, ws[i]) + wd[i]
-            );
+        for (int i = 0; i < lst.length; i++) {
+            int t = lst[i] + ldu[i];
+
+            for (int j = 0; j < wst.length; j++) {
+                ans = Math.min(ans, Math.max(t, wst[j]) + wdu[j]);
+            }
+        }
+
+        for (int i = 0; i < wst.length; i++) {
+            int t = wst[i] + wdu[i];
+
+            for (int j = 0; j < lst.length; j++) {
+                ans = Math.min(ans, Math.max(t, lst[j]) + ldu[j]);
+            }
         }
 
         return ans;
-    }
-    public int earliestFinishTime(int[] landStartTime, int[] landDuration, int[] waterStartTime, int[] waterDuration) {
-        return Math.min(
-            calFinishTime(landStartTime,landDuration,waterStartTime,waterDuration),
-            calFinishTime(waterStartTime,waterDuration,landStartTime,landDuration)
-        );
     }
 }
