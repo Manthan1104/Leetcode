@@ -1,52 +1,42 @@
 class Solution {
+
     private static final int MOD = 1_000_000_007;
 
-    private int power(long a, long b) {
-        long ans = 1;
-        a %= MOD;
-
-        while (b > 0) {
-            if ((b & 1) == 1) {
-                ans = (ans * a) % MOD;
+    private int qpow(int x, int y) {
+        long res = 1;
+        long base = x;
+        while (y > 0) {
+            if ((y & 1) == 1) {
+                res = (res * base) % MOD;
             }
-
-            a = (a * a) % MOD;
-            b >>= 1;
+            base = (base * base) % MOD;
+            y >>= 1;
         }
-
-        return (int) ans;
+        return (int) res;
     }
 
-    private int dfs(int node, int parent, List<List<Integer>> adj) {
-        int ans = 0;
-
-        for (int child : adj.get(node)) {
-            if (child != parent) {
-                ans = Math.max(ans, 1 + dfs(child, node, adj));
-            }
+    private int dfs(List<List<Integer>> g, int x, int f) {
+        int maxDep = 0;
+        for (int y : g.get(x)) {
+            if (y == f) continue;
+            maxDep = Math.max(maxDep, dfs(g, y, x) + 1);
         }
-
-        return ans;
+        return maxDep;
     }
 
     public int assignEdgeWeights(int[][] edges) {
-        int n = edges.length + 2;
-
-        List<List<Integer>> adj = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            adj.add(new ArrayList<>());
+        int n = edges.length + 1;
+        List<List<Integer>> g = new ArrayList<>();
+        for (int i = 0; i <= n; i++) {
+            g.add(new ArrayList<>());
         }
-
-        for (int[] edge : edges) {
-            int u = edge[0];
-            int v = edge[1];
-
-            adj.get(u).add(v);
-            adj.get(v).add(u);
+        for (int[] e : edges) {
+            int u = e[0];
+            int v = e[1];
+            g.get(u).add(v);
+            g.get(v).add(u);
         }
-
-        int depth = dfs(1, -1, adj);
-
-        return power(2, depth - 1);
+        int maxDep = dfs(g, 1, 0);
+        return qpow(2, maxDep - 1);
     }
 }
