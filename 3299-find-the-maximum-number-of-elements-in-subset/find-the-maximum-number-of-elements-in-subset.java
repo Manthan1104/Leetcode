@@ -1,30 +1,29 @@
-class Solution {
-    private static final int MAX_BASE = 31622;
-
+class Solution 
+{
     public int maximumLength(int[] nums) {
-        Map<Integer, Integer> freq = new HashMap<>();
-        for (int n : nums)
-            freq.merge(n, 1, Integer::sum);
+        Map<Long, Integer> cnt = new HashMap<>();
+        for (int num : nums) {
+            cnt.merge((long) num, 1, Integer::sum);
+        }
 
-        int one = freq.getOrDefault(1, 0);
-        int res = (one - 1) | 1;
-        freq.remove(1);
+        int oneCnt = cnt.getOrDefault(1L, 0);
+        // ans is at least the number of occurrences of 1, rounded down to an odd number
+        int ans = (oneCnt & 1) == 1 ? oneCnt : oneCnt - 1;
 
-        for (int f : freq.keySet()) {
-            int sq = (int) Math.sqrt(f);
-            if (sq * sq == f && freq.getOrDefault(sq, 0) > 1)
-                continue;
+        cnt.remove(1L);
 
-            int n = 0, x = f;
+        for (long num : cnt.keySet()) {
+            int res = 0;
+            long x = num;
 
-            while (x < 31623 && freq.containsKey(x) && freq.get(x) > 1) {
-                n += 2;
+            while (cnt.containsKey(x) && cnt.get(x) > 1) {
+                res += 2;
                 x *= x;
             }
 
-            res = Math.max(res, n + (freq.containsKey(x) ? 1 : -1));
+            ans = Math.max(ans, res + (cnt.containsKey(x) ? 1 : -1));
         }
 
-        return res;
+        return ans;
     }
 }
